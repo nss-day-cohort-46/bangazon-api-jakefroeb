@@ -29,6 +29,13 @@ class OrderTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        # Add payment Type
+        url = "/paymenttypes"
+        data = {"merchant_name": "Visa", "account_number":"0012-1234-1234-1234", "expiration_date":"2021-05-20", "create_date":"2020-03-20"}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
 
     def test_add_product_to_order(self):
         """
@@ -80,5 +87,28 @@ class OrderTests(APITestCase):
         self.assertEqual(len(json_response["lineitems"]), 0)
 
     # TODO: Complete order by adding payment type
+    def test_add_payment_to_order(self):
+        """
+        Ensure we can add a payment type to an order completing the order
+        """
+        #Test for the put method
+        self.test_add_product_to_order()
+        data={"payment_type": 1}
+        url = "/orders/1"
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        #get current cart to test if the order has been completed
+        url = "/profile/cart"
+        response = self.client.get(url, None, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        #get order to check if payment method has been added
+        url = "/orders/1"
+        response = self.client.get(url, None, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['payment_type'], "http://localhost:8000/paymenttypes/1")
+
 
     # TODO: New line item is not added to closed order
