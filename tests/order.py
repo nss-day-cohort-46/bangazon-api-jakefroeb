@@ -108,7 +108,23 @@ class OrderTests(APITestCase):
         url = "/orders/1"
         response = self.client.get(url, None, format='json')
         json_response = json.loads(response.content)
-        self.assertEqual(json_response['payment_type'], "http://localhost:8000/paymenttypes/1")
+        self.assertEqual(json_response['payment_type'], "http://testserver/paymenttypes/1")
 
 
     # TODO: New line item is not added to closed order
+    def test_new_order_after_completed_order(self):
+
+        #create order and complete order
+        self.test_add_payment_to_order()
+
+        #add item to cart
+        url = "/profile/cart"
+        data = { "product_id": 1 }
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        #check to see if current cart is second new order
+        response = self.client.get(url, None, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['id'], 2)
