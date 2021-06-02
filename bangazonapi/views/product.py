@@ -8,7 +8,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from bangazonapi.models import Product, Customer, ProductCategory
+from bangazonapi.models import Product, Customer, ProductCategory, ProductRating
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -323,3 +323,29 @@ class Products(ViewSet):
             products = customer.liked_products
             serializer = ProductSerializer(products, many=True, context={'request': request})
             return Response(serializer.data)
+
+    @action(methods=['post','delete'], detail=True)
+    def rate(self, request, pk=None):
+        if request.method == "POST":
+            rating = ProductRating()
+            customer = Customer.objects.get(user=request.auth.user)
+            product = Product.objects.get(pk=pk)
+            score = request.data["score"]
+            rating.customer = customer
+            rating.product = product
+            rating.rating = score
+            rating.save()
+            return Response(None, status=status.HTTP_201_CREATED)
+        if request.method == "DELETE":
+            customer = Customer.objects.get(user=request.auth.user)
+            product = Product.objects.get(pk=pk)
+            try:
+                rating = ProductRating.objects.get(customer=customer, product=product)
+                rating.delete()
+                return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+            except ProductRating.DoesNotExist as ex:
+                return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+
+            
