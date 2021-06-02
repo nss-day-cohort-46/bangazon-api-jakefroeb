@@ -301,3 +301,6 @@ class Products(ViewSet):
             return Response(None, status=status.HTTP_204_NO_CONTENT)
 
         return Response(None, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    @action(methods=['post','delete'], detail=True)
+    def like(self, request, pk=None):
+        if request.method == "POST"
