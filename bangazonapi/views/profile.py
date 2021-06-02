@@ -358,10 +358,11 @@ class RecommenderSerializer(serializers.ModelSerializer):
     """JSON serializer for recommendations"""
     customer = CustomerSerializer()
     product = ProfileProductSerializer()
+    recommender = CustomerSerializer()
 
     class Meta:
         model = Recommendation
-        fields = ('product', 'customer',)
+        fields = ('product', 'customer', 'recommender')
 
 
 class ProfileSerializer(serializers.ModelSerializer):
