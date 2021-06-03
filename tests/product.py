@@ -95,7 +95,6 @@ class ProductTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(json_response), 3)
 
-    # TODO: Delete product
     def test_delete_product(self):
         """
         Ensure we can delete a product
@@ -109,9 +108,6 @@ class ProductTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-
-
-    # TODO: Product can be rated. Assert average rating exists.
     def test_product_rating(self):
         """
         Ensure we can add a rating to a product
