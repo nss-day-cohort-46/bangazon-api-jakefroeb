@@ -22,3 +22,10 @@ def incomplete_order_list(request):
         template = 'orders/orders.html'
         context = {'orders' : orders}
         return render(request, template, context)
+
+def complete_order_list(request):
+    if request.method == "GET":
+        orders = Order.objects.filter(payment_type__isnull = False).annotate(total = Sum('lineitems__product__price'))
+        template = 'orders/orders.html'
+        context = {'orders' : orders}
+        return render(request, template, context)
