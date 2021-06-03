@@ -7,7 +7,6 @@ from bangazonapi.models import *
 from bangazonapi.views import *
 from django.urls import path
 
-# pylint: disable=invalid-name
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'products', Products, 'product')
 router.register(r'productcategories', ProductCategories, 'productcategory')
